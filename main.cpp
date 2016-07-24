@@ -1,9 +1,20 @@
-#include <iostream>
+#include "myparser.h"
 
-using namespace std;
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
-    cout << "Hello World!" << endl;
+    MyParser imp;
+
+    if(argc != 3)
+    {
+        imp.importFromFile("data/TestBin.fbx");
+    }
+    else
+    {
+        imp.importFromFile(argv[1]);
+        imp.exportToFile(argv[2]);
+    }
+
     return 0;
 }
