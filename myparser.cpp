@@ -348,11 +348,6 @@ void MyParser::loadNodeKeyframe(FbxNode *node)
                                    rotationVector[1],
                                    rotationVector[2]);
             }
-
-            std::cout << "\tscale:     "; coutVec3(scale);
-            std::cout << "\ttranslate: "; coutVec3(translate);
-            std::cout << "\trotate:    "; coutVec3(rotate);
-            std::cout << std::endl;
         }
     }
 }
@@ -387,7 +382,7 @@ void MyParser::loadSkelett(FbxMesh *mesh)
                 int boneVertexIndex = boneVertexIndices[k];
                 float boneWeight = (float)boneVertexWeights[boneVertexIndex];
 
-                node->addBoneDep(Bone(boneVertexIndex, boneWeight));
+                node->addBoneDep(boneVertexIndex, boneWeight);
 
                 //std::cout << "bonevertex: " << boneVertexIndex << std::endl;
                 //std::cout << "boneweight: " << boneWeight << std::endl;

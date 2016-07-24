@@ -18,9 +18,9 @@ void MyNode::addChild(MyNode *child)
     mChildren.emplace_back(child);
 }
 
-void MyNode::addBoneDep(Bone bone)
+void MyNode::addBoneDep(int vertexIndex, float boneWeight)
 {
-    boneData.emplace_back(bone);
+    boneData.emplace_back(vertexIndex, boneWeight);
 }
 
 MyNode *MyNode::getParent()
@@ -43,6 +43,11 @@ unsigned int MyNode::getChildCount()
 std::string &MyNode::getName()
 {
     return name;
+}
+
+void MyNode::addNodeAnimation(MyNodeAnimation *nodeAnim)
+{
+    nodeAnimations.emplace_back(nodeAnim);
 }
 
 Bone &MyNode::getBoneDep(unsigned int index)

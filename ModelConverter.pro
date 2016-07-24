@@ -8,6 +8,8 @@ LIBS += -L$$PWD/bin/ -lfbxsdk -ldl
 SOURCES += main.cpp \
     myparser.cpp \
     MyModelFormat/mynode.cpp \
+    MyModelFormat/mynodeanimation.cpp \
+    MyModelFormat/myanimation.cpp
 
 HEADERS += \
     myparser.h \
@@ -156,7 +158,10 @@ HEADERS += \
     extern/glm/vec4.hpp \
     extern/glm/vector_relational.hpp \
     Common/vab.h \
+    MyModelFormat/mynodeanimation.h \
+    MyModelFormat/myanimation.h
 
 DISTFILES += \
     data/Test.png \
     data/Test.fbx \
+    data/TestBin.fbx
