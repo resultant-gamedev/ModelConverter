@@ -2,6 +2,7 @@
 #define MYANIMATION_H
 
 #include <vector>
+#include <string>
 
 class MyNode;
 class MyNodeAnimation;
@@ -13,14 +14,19 @@ class MyNodeAnimation;
 class MyAnimation
 {
 public:
-    MyAnimation();
+    MyAnimation(std::string name, float duration);
     ~MyAnimation();
+
+    std::string& getName();
+    float getDuration();
 
     void addNodeAnimation(MyNode* node);
     MyNodeAnimation* getLastNodeAnim();
 
 private:
     std::vector<MyNodeAnimation*> nodeAnimations;
+    std::string name;
+    float duration;
 };
 
 #endif // MYANIMATION_H

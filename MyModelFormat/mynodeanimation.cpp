@@ -11,22 +11,15 @@ MyNodeAnimation::~MyNodeAnimation()
 
 }
 
+void MyNodeAnimation::addTransformation(glm::vec3 scale,
+                                        glm::vec3 translate,
+                                        glm::vec3 rotate,
+                                        float deadline)
+{
+    transformations.emplace_back(scale, translate, rotate, deadline);
+}
+
 void MyNodeAnimation::connectNode(MyNode *node)
 {
     this->node = node;
-}
-
-void MyNodeAnimation::addTranslations(glm::vec3 vector, float deadline)
-{
-    translations.emplace_back(vector, deadline);
-}
-
-void MyNodeAnimation::addRotation(glm::vec3 vector, float deadline)
-{
-    rotations.emplace_back(vector, deadline);
-}
-
-void MyNodeAnimation::addScaling(glm::vec3 vector, float deadline)
-{
-    scalings.emplace_back(vector, deadline);
 }

@@ -13,6 +13,8 @@
 #include "Common/vab.h"
 
 #include "MyModelFormat/mynode.h"
+#include "MyModelFormat/mynodeanimation.h"
+#include "MyModelFormat/myanimation.h"
 
 inline void coutVec3(const glm::vec3& v)
 {
@@ -33,6 +35,7 @@ private:
     void loadMesh(FbxMesh* pMesh);
     void loadNodeKeyframe(FbxNode* node);
     void loadSkelett(FbxMesh* mesh);
+    void createAnimations();
 
     void exportMesh();
     void exportAnimation();
@@ -44,6 +47,7 @@ private:
 
     std::vector<NormalizedTexturedVertex> data;
     std::vector<MyNode> bones;
+    std::vector<MyAnimation> animations;
 };
 
 #endif // MYPARSER_H

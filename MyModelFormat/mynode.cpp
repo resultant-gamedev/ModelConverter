@@ -45,6 +45,12 @@ std::string &MyNode::getName()
     return name;
 }
 
+void MyNode::setBindPose(glm::mat4 m)
+{
+    bindPose = m;
+    invBindPose = glm::inverse(bindPose);
+}
+
 void MyNode::addNodeAnimation(MyNodeAnimation *nodeAnim)
 {
     nodeAnimations.emplace_back(nodeAnim);

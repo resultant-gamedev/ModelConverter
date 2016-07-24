@@ -2,7 +2,9 @@
 #include "mynodeanimation.h"
 #include "mynode.h"
 
-MyAnimation::MyAnimation()
+MyAnimation::MyAnimation(std::string name, float duration)
+    : name(name)
+    , duration(duration)
 {
 
 }
@@ -13,6 +15,16 @@ MyAnimation::~MyAnimation()
     {
         delete nodeAni;
     }
+}
+
+std::string &MyAnimation::getName()
+{
+    return name;
+}
+
+float MyAnimation::getDuration()
+{
+    return duration;
 }
 
 void MyAnimation::addNodeAnimation(MyNode *node)

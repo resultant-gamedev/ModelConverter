@@ -9,11 +9,18 @@
 
 struct Transformation
 {
-    Transformation(glm::vec3 v, float d)
-        : vector(v)
+    Transformation(glm::vec3 s,
+                   glm::vec3 t,
+                   glm::vec3 r,
+                   float d)
+        : scale(s)
+        , translate(t)
+        , rotate(r)
         , deadLine(d){}
 
-    glm::vec3 vector;
+    glm::vec3 scale;
+    glm::vec3 translate;
+    glm::vec3 rotate;
     float deadLine;
 };
 
@@ -32,19 +39,16 @@ public:
 
     ~MyNodeAnimation();
 
-    void addTranslations(glm::vec3 vector, float deadline);
-    void addRotation(glm::vec3 vector, float deadline);
-    void addScaling(glm::vec3 vector, float deadline);
+    void addTransformation(glm::vec3 scale,
+                           glm::vec3 translate,
+                           glm::vec3 rotate,
+                           float deadline);
 
 private:
     MyNodeAnimation();
-
     void connectNode(MyNode* node);
 
-    std::vector<Transformation> scalings;
-    std::vector<Transformation> rotations;
-    std::vector<Transformation> translations;
-
+    std::vector<Transformation> transformations;
     MyNode* node;
 };
 

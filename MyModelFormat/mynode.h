@@ -18,6 +18,7 @@ struct Bone
 };
 
 class MyNodeAnimation;
+class MyAnimation;
 
 /**
  * @brief The MyNode class
@@ -26,6 +27,8 @@ class MyNodeAnimation;
  */
 class MyNode
 {
+    friend class MyAnimation;
+
 public:
     MyNode(std::string name,
            MyNode* parent = 0);
@@ -42,15 +45,20 @@ public:
     unsigned int getChildCount();
     std::string& getName();
 
+    void setBindPose(glm::mat4 m);
+
+private:    
     void addNodeAnimation(MyNodeAnimation* nodeAnim);
 
-private:
     MyNode* mParent;
     std::vector<MyNode*> mChildren;
     std::vector<Bone> boneData;
     std::vector<MyNodeAnimation*> nodeAnimations;
 
     std::string name;
+
+    glm::mat4 bindPose;
+    glm::mat4 invBindPose;
 };
 
 #endif // MYNODE_H
