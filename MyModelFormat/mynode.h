@@ -41,8 +41,7 @@ public:
     unsigned int getBoneDepCount();
 
     MyNode *getParent();
-    MyNode *getChild(unsigned int i);
-    unsigned int getChildCount();
+    std::vector<MyNode*>& getChildren();
     std::string& getName();
 
     void setBindPose(glm::mat4 m);

@@ -30,16 +30,9 @@ MyNode *MyNode::getParent()
     return mParent;
 }
 
-MyNode *MyNode::getChild(unsigned int i)
+std::vector<MyNode *> &MyNode::getChildren()
 {
-    assert(i < mChildren.size());
-
-    return mChildren[i];
-}
-
-unsigned int MyNode::getChildCount()
-{
-    return mChildren.size();
+    return mChildren;
 }
 
 std::string &MyNode::getName()

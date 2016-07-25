@@ -25,6 +25,8 @@ void MyExporter::exportModel()
 {
     exportMesh();
     exportBones();
+    exportConnections();
+    exportAnimations();
 
     file << std::endl;
 }
@@ -122,6 +124,37 @@ void MyExporter::exportBones()
             prefix.resize(prefix.size()-1);
             file << prefix << "}" << std::endl;
         }
+
+    file << "}" << std::endl;
+}
+
+void MyExporter::exportConnections()
+{
+    std::string prefix("");
+
+    file << "Connections {" << std::endl;
+    prefix += '\t';
+
+        for(MyNode& node : model.getBones())
+        {
+            for(MyNode* child : node.getChildren())
+            {
+                std::cout << node.getName() << " : " << child->getName() << std::endl;
+                file << prefix << node.getName() << " : " << child->getName() << std::endl;
+            }
+        }
+
+    file << "}" << std::endl;
+}
+
+void MyExporter::exportAnimations()
+{
+    std::string prefix("");
+
+    file << "Animations {" << std::endl;
+    prefix += '\t';
+
+
 
     file << "}" << std::endl;
 }

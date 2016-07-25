@@ -76,8 +76,6 @@ void MyParser::loadNode(FbxNode *node)
 
 void MyParser::loadMesh(FbxMesh *pMesh)
 {
-
-
     // ======================= get vertices =========================
     for(int i = 0; i < pMesh->GetControlPointsCount(); i++)
     {
