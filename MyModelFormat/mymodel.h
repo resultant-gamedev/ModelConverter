@@ -20,7 +20,7 @@ public:
 
 private:
     std::vector<glm::vec4> vPosition;
-    std::vector<int> vIndex;
+    std::vector<uint32_t> vIndex;
     std::vector<glm::vec3> vNormal;
     std::vector<glm::vec2> vUV;
 

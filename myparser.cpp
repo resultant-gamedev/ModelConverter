@@ -38,19 +38,11 @@ void MyParser::importFromFile(const string &filename)
 
 void MyParser::exportToFile(const string &filename)
 {
-
+    MyExporter exporter("data/test.my", model);
 }
 
 void MyParser::loadNode(FbxNode *node)
 {
-    FbxNode* parent = node->GetParent();
-    std::string parentName("");
-
-    if(parent)
-         parentName = parent->GetName();
-
-    bones.emplace_back(node->GetName(), findNode(parentName));
-
     for (int i = 0; i < node->GetNodeAttributeCount(); i++)
     {
         FbxNodeAttribute *nodeAttributeFbx = node->GetNodeAttributeByIndex(i);
@@ -90,13 +82,13 @@ void MyParser::loadMesh(FbxMesh *pMesh)
     for(int i = 0; i < pMesh->GetControlPointsCount(); i++)
     {
         FbxVector4 vert = pMesh->GetControlPointAt(i);
-        vPosition.emplace_back(
+        model.getPositions().emplace_back(
                     glm::make_vec4(reinterpret_cast<float*>(vert.Buffer())));
     }
 
-    indices.resize(pMesh->GetPolygonVertexCount());
-    indices.assign(pMesh->GetPolygonVertices(),
-                   pMesh->GetPolygonVertices() + pMesh->GetPolygonVertexCount());
+    model.getIndices().resize(pMesh->GetPolygonVertexCount());
+    model.getIndices().assign(pMesh->GetPolygonVertices(),
+                              pMesh->GetPolygonVertices() + pMesh->GetPolygonVertexCount());
 
 
     // ======================== get normals =========================
@@ -122,7 +114,7 @@ void MyParser::loadMesh(FbxMesh *pMesh)
             FbxVector4 tmp = pNormalElem->GetDirectArray().GetAt(index);
             glm::vec3 normal(tmp[0], tmp[1], tmp[2]);
 
-            vNormal.emplace_back(normal);
+            model.getNormals().emplace_back(normal);
         }
     }
     else if(pNormalElem->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
@@ -146,7 +138,7 @@ void MyParser::loadMesh(FbxMesh *pMesh)
                 FbxVector4 tmp = pNormalElem->GetDirectArray().GetAt(index);
                 glm::vec3 normal(tmp[0], tmp[1], tmp[2]);
 
-                vNormal.emplace_back(normal);
+                model.getNormals().emplace_back(normal);
 
                 polygonVertexIndex++;
             }
@@ -190,7 +182,7 @@ void MyParser::loadMesh(FbxMesh *pMesh)
                     FbxVector2 tmp = uvElement->GetDirectArray().GetAt(uvIndex);
                     glm::vec2 uv(tmp[0], tmp[1]);
 
-                    vUV.emplace_back(uv);
+                    model.getUVs().emplace_back(uv);
                 }
             }
         }
@@ -212,7 +204,7 @@ void MyParser::loadMesh(FbxMesh *pMesh)
                         FbxVector2 tmp = uvElement->GetDirectArray().GetAt(uvIndex);
                         glm::vec2 uv(tmp[0], tmp[1]);
 
-                        vUV.emplace_back(uv);
+                        model.getUVs().emplace_back(uv);
 
                         polygonVertexIndex++;
                     }
@@ -222,8 +214,8 @@ void MyParser::loadMesh(FbxMesh *pMesh)
     }
 
     // check correctness
-    assert(indices.size() == vNormal.size());
-    assert(indices.size() == vUV.size());
+    assert(model.getIndices().size() == model.getNormals().size());
+    assert(model.getIndices().size() == model.getUVs().size());
 }
 
 void MyParser::loadNodeKeyframe(FbxNode *node)
@@ -243,8 +235,8 @@ void MyParser::loadNodeKeyframe(FbxNode *node)
             FbxAnimCurve *scalingCurve = node->LclScaling.GetCurve(animLayer);
 
             std::string name = node->GetName();
-            animations[i].addNodeAnimation(findNode(name));
-            MyNodeAnimation* nodeAnim = animations[i].getLastNodeAnim();
+            model.getAnimations()[i].addNodeAnimation(findNode(name));
+            MyNodeAnimation* nodeAnim = model.getAnimations()[i].getLastNodeAnim();
 
             struct OneChannelTrans
             {
@@ -383,6 +375,15 @@ void MyParser::loadSkelett(FbxMesh *mesh)
 
             // Get a reference to the bone's node
             FbxNode* bone = cluster->GetLink();
+
+            FbxNode* parent = bone->GetParent();
+            std::string parentName("");
+
+            if(parent)
+                 parentName = parent->GetName();
+
+            model.getBones().emplace_back(bone->GetName(), findNode(parentName));
+
             loadNodeKeyframe(bone);
 
             std::string name = bone->GetName();
@@ -415,14 +416,14 @@ void MyParser::createAnimations()
     {
         FbxAnimStack *animStack = (FbxAnimStack*)scene->GetSrcObject<FbxAnimStack>(i);
 
-        animations.emplace_back(animStack->GetName(),
-                                animStack->GetLocalTimeSpan().GetDuration().GetSecondDouble());
+        model.getAnimations().emplace_back(animStack->GetName(),
+                                           animStack->GetLocalTimeSpan().GetDuration().GetSecondDouble());
     }
 }
 
 MyNode *MyParser::findNode(string &name)
 {
-    for(MyNode& bone : bones)
+    for(MyNode& bone : model.getBones())
     {
         if(bone.getName() == name)
             return &bone;

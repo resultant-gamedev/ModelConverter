@@ -9,12 +9,15 @@ int main(int argc, char *argv[])
     if(argc != 3)
     {
         imp.importFromFile("data/TestBin.fbx");
+        imp.exportToFile("");
     }
     else
     {
         imp.importFromFile(argv[1]);
         imp.exportToFile(argv[2]);
     }
+
+    std::cout << "successfully converted" << std::endl;
 
     return 0;
 }

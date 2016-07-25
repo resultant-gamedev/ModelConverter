@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     MyModelFormat/mynode.cpp \
     MyModelFormat/mynodeanimation.cpp \
     MyModelFormat/myanimation.cpp \
-    MyModelFormat/mymodel.cpp
+    MyModelFormat/mymodel.cpp \
+    MyModelFormat/myexporter.cpp
 
 HEADERS += \
     myparser.h \
@@ -161,7 +162,8 @@ HEADERS += \
     Common/vab.h \
     MyModelFormat/mynodeanimation.h \
     MyModelFormat/myanimation.h \
-    MyModelFormat/mymodel.h
+    MyModelFormat/mymodel.h \
+    MyModelFormat/myexporter.h
 
 DISTFILES += \
     data/Test.png \

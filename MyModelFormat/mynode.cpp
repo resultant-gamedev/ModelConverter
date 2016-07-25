@@ -4,6 +4,8 @@ MyNode::MyNode(std::string name,
                MyNode *parent)
     : mParent(parent)
     , name(name)
+    , bindPose(0.0f)
+    , invBindPose(0.0f)
 {
 
 }
@@ -49,6 +51,16 @@ void MyNode::setBindPose(glm::mat4 m)
 {
     bindPose = m;
     invBindPose = glm::inverse(bindPose);
+}
+
+glm::mat4 MyNode::getBindPose()
+{
+    return bindPose;
+}
+
+glm::mat4 MyNode::getInvBindPose()
+{
+    return invBindPose;
 }
 
 void MyNode::addNodeAnimation(MyNodeAnimation *nodeAnim)

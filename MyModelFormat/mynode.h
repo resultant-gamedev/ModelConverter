@@ -46,6 +46,8 @@ public:
     std::string& getName();
 
     void setBindPose(glm::mat4 m);
+    glm::mat4 getBindPose();
+    glm::mat4 getInvBindPose();
 
 private:    
     void addNodeAnimation(MyNodeAnimation* nodeAnim);

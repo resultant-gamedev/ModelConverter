@@ -13,6 +13,7 @@
 #include "Common/vab.h"
 
 #include "MyModelFormat/mymodel.h"
+#include "MyModelFormat/myexporter.h"
 
 inline void coutVec3(const glm::vec3& v)
 {
