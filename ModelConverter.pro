@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     myparser.cpp \
     MyModelFormat/mynode.cpp \
     MyModelFormat/mynodeanimation.cpp \
-    MyModelFormat/myanimation.cpp
+    MyModelFormat/myanimation.cpp \
+    MyModelFormat/mymodel.cpp
 
 HEADERS += \
     myparser.h \
@@ -159,7 +160,8 @@ HEADERS += \
     extern/glm/vector_relational.hpp \
     Common/vab.h \
     MyModelFormat/mynodeanimation.h \
-    MyModelFormat/myanimation.h
+    MyModelFormat/myanimation.h \
+    MyModelFormat/mymodel.h
 
 DISTFILES += \
     data/Test.png \

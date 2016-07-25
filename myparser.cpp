@@ -84,10 +84,7 @@ void MyParser::loadNode(FbxNode *node)
 
 void MyParser::loadMesh(FbxMesh *pMesh)
 {
-    std::vector<glm::vec4> vPosition;
-    std::vector<int> indices;
-    std::vector<glm::vec3> vNormal;
-    std::vector<glm::vec2> vUV;
+
 
     // ======================= get vertices =========================
     for(int i = 0; i < pMesh->GetControlPointsCount(); i++)
@@ -227,18 +224,6 @@ void MyParser::loadMesh(FbxMesh *pMesh)
     // check correctness
     assert(indices.size() == vNormal.size());
     assert(indices.size() == vUV.size());
-
-    // fill data
-    uint32_t size = indices.size();
-
-    for(uint32_t i = 0; i < size; i++)
-    {
-        assert((uint32_t)indices[i] < vPosition.size());
-
-        data.emplace_back(vPosition[indices[i]],
-                vUV[i],
-                vNormal[i]);
-    }
 }
 
 void MyParser::loadNodeKeyframe(FbxNode *node)

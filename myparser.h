@@ -12,9 +12,7 @@
 
 #include "Common/vab.h"
 
-#include "MyModelFormat/mynode.h"
-#include "MyModelFormat/mynodeanimation.h"
-#include "MyModelFormat/myanimation.h"
+#include "MyModelFormat/mymodel.h"
 
 inline void coutVec3(const glm::vec3& v)
 {
@@ -45,9 +43,7 @@ private:
     FbxManager* pManager;
     FbxScene* scene;
 
-    std::vector<NormalizedTexturedVertex> data;
-    std::vector<MyNode> bones;
-    std::vector<MyAnimation> animations;
+    MyModel model;
 };
 
 #endif // MYPARSER_H
