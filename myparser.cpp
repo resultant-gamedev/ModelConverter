@@ -243,8 +243,8 @@ void MyParser::loadNodeKeyframe(FbxNode *node)
             FbxAnimCurve *scalingCurve = node->LclScaling.GetCurve(animLayer);
 
             std::string name = node->GetName();
-            model.getAnimations()[i].addNodeAnimation(model.findBone(name));
-            MyNodeAnimation* nodeAnim = model.getAnimations()[i].getLastNodeAnim();
+            model.getAnimations()[i]->addNodeAnimation(model.findBone(name));
+            MyNodeAnimation* nodeAnim = model.getAnimations()[i]->getLastNodeAnim();
 
             struct OneChannelTrans
             {
@@ -423,8 +423,9 @@ void MyParser::createAnimations()
     {
         FbxAnimStack *animStack = (FbxAnimStack*)scene->GetSrcObject<FbxAnimStack>(i);
 
-        model.getAnimations().emplace_back(animStack->GetName(),
-                                           animStack->GetLocalTimeSpan().GetDuration().GetSecondDouble());
+        model.getAnimations().emplace_back(
+                    new MyAnimation (animStack->GetName(),
+                                     animStack->GetLocalTimeSpan().GetDuration().GetSecondDouble()));
     }
 }
 

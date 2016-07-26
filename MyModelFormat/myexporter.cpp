@@ -178,15 +178,15 @@ void MyExporter::exportAnimations()
     file << ANIMATIONS << " {" << std::endl;
     prefix += '\t';
 
-        for(MyAnimation& animation : model.getAnimations())
+        for(MyAnimation* animation : model.getAnimations())
         {
-            file << prefix << animation.getName() << " {" << std::endl;
+            file << prefix << animation->getName() << " {" << std::endl;
             prefix += '\t';
 
                 file << prefix << ANIMATIONDURATION << " {" << std::endl;
                 prefix += '\t';
 
-                    file << prefix << animation.getDuration() << std::endl;
+                    file << prefix << animation->getDuration() << std::endl;
 
                 prefix.resize(prefix.size()-1);
                 file << prefix << "}" << std::endl;
@@ -194,25 +194,28 @@ void MyExporter::exportAnimations()
                 file << prefix << NODEANIMATION << " {" << std::endl;
                 prefix += '\t';
 
-                    for(MyNodeAnimation* nodeAnim : animation.nodeAnimations)
+                    for(MyNodeAnimation* nodeAnim : animation->nodeAnimations)
                     {
-                        file << prefix << nodeAnim->node->getName() << " {" << std::endl;
-                        prefix += '\t';
+                        if(nodeAnim->transformations.size())
+                        {
+                            file << prefix << nodeAnim->node->getName() << " {" << std::endl;
+                            prefix += '\t';
 
-                            uint32_t count = nodeAnim->transformations.size();
-                            for(uint32_t i = 0; i < count; i++)
-                            {
-                                Transformation& trans = nodeAnim->transformations[i];
+                                uint32_t count = nodeAnim->transformations.size();
+                                for(uint32_t i = 0; i < count; i++)
+                                {
+                                    Transformation& trans = nodeAnim->transformations[i];
 
-                                file << prefix
-                                     << trans.scale.x << "," << trans.scale.y << "," << trans.scale.z << ","
-                                     << trans.rotate.x << "," << trans.rotate.y << "," << trans.rotate.z << ","
-                                     << trans.translate.x << "," << trans.translate.y << "," << trans.translate.z << ","
-                                     << trans.deadLine << ((i != count-1) ? "," : "") << std::endl;
-                            }
+                                    file << prefix
+                                         << trans.scale.x << "," << trans.scale.y << "," << trans.scale.z << ","
+                                         << trans.rotate.x << "," << trans.rotate.y << "," << trans.rotate.z << ","
+                                         << trans.translate.x << "," << trans.translate.y << "," << trans.translate.z << ","
+                                         << trans.deadLine << ((i != count-1) ? "," : "") << std::endl;
+                                }
 
-                        prefix.resize(prefix.size()-1);
-                        file << prefix << "}" << std::endl;
+                            prefix.resize(prefix.size()-1);
+                            file << prefix << "}" << std::endl;
+                        }
                     }
 
                 prefix.resize(prefix.size()-1);

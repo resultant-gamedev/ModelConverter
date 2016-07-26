@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <functional>
 
 MyImporter::MyImporter(std::string filename,
                        MyModel& model)
@@ -27,25 +28,24 @@ MyImporter::~MyImporter()
 
 void MyImporter::importModel()
 {
-    for(MyStack* stack : stacks)
+    auto findCorrectStack = [&](std::string name, std::function<void(MyStack*)> getData)
     {
-        if(MESH == stack->getName())
+        for(MyStack* stack : stacks)
         {
-            importMesh(stack);
+            if(name == stack->getName())
+            {
+                getData(stack);
+                return;
+            }
         }
-        else if(BONES == stack->getName())
-        {
-            importBones(stack);
-        }
-        else if(BONECONNECTIONS == stack->getName())
-        {
-            importConnections(stack);
-        }
-        else if(ANIMATIONDURATION == stack->getName())
-        {
-            importAnimations(stack);
-        }
-    }
+    };
+
+    using std::placeholders::_1;
+
+    findCorrectStack(MESH, std::bind(&MyImporter::importMesh, this, _1));
+    findCorrectStack(BONES, std::bind(&MyImporter::importBones, this, _1));
+    findCorrectStack(BONECONNECTIONS, std::bind(&MyImporter::importConnections, this, _1));
+    findCorrectStack(ANIMATIONS, std::bind(&MyImporter::importAnimations, this, _1));
 }
 
 void MyImporter::importMesh(MyStack *stack)
@@ -141,12 +141,80 @@ void MyImporter::importBones(MyStack* stack)
 
 void MyImporter::importConnections(MyStack* stack)
 {
+    std::istringstream sstream(stack->getContent());
+    std::string connection;
 
+    while(std::getline(sstream, connection, ','))
+    {
+        std::string name1;
+        std::string name2;
+        char dummy;
+
+        std::istringstream constream(connection);
+        constream >> name1 >> dummy >> name2;
+
+        MyNode* parent = model.findBone(name1);
+        MyNode* child = model.findBone(name2);
+
+        assert(parent);
+        assert(child);
+
+        parent->addChild(child);
+        child->setParent(parent);
+    }
 }
 
 void MyImporter::importAnimations(MyStack* stack)
 {
+    for(MyStack* aniStack : stack->getChildren())
+    {
+        float duration;
 
+        for(MyStack* durationChild : aniStack->getChildren())
+        {
+            if(durationChild->getName() == ANIMATIONDURATION)
+            {
+                std::istringstream sstream(durationChild->getContent());
+
+                sstream >> duration;
+            }
+        }
+
+        model.getAnimations().emplace_back(new MyAnimation(aniStack->getName(), duration));
+        MyAnimation* animation = model.getAnimations().back();
+
+        for(MyStack* nodeAnimStack : aniStack->getChildren())
+        {
+            if(nodeAnimStack->getName() == NODEANIMATION)
+            {
+                for(MyStack* nodeAnimChild : nodeAnimStack->getChildren())
+                {
+                    MyNode* bone = model.findBone(nodeAnimChild->getName());
+                    assert(bone);
+
+                    animation->addNodeAnimation(bone);
+                    MyNodeAnimation* nodeAnim = animation->getLastNodeAnim();
+
+                    glm::vec3 s, t, r;
+                    float d;
+                    char dummy;
+
+                    std::istringstream sstream(nodeAnimChild->getContent());
+
+                    do
+                    {
+                        sstream >> s.x >> dummy >> s.y >> dummy >> s.z >> dummy
+                                >> t.x >> dummy >> t.y >> dummy >> t.z >> dummy
+                                >> r.x >> dummy >> r.y >> dummy >> r.z >> dummy
+                                >> d;
+
+                        nodeAnim->addTransformation(s, t, r ,d);
+
+                    } while(sstream >> dummy);
+                }
+            }
+        }
+    }
 }
 
 void MyImporter::loadStacks()

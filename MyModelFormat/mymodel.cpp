@@ -7,7 +7,10 @@ MyModel::MyModel()
 
 MyModel::~MyModel()
 {
-
+    for(MyAnimation* animation : vAnimation)
+    {
+        delete animation;
+    }
 }
 
 std::vector<glm::vec4> &MyModel::getPositions()
@@ -35,7 +38,7 @@ std::vector<MyNode> &MyModel::getBones()
     return vBone;
 }
 
-std::vector<MyAnimation> &MyModel::getAnimations()
+std::vector<MyAnimation *> &MyModel::getAnimations()
 {
     return vAnimation;
 }

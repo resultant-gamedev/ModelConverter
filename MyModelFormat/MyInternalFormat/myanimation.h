@@ -7,6 +7,7 @@
 class MyNode;
 class MyNodeAnimation;
 class MyExporter;
+class MyImporter;
 
 /**
  * @brief The MyAnimation class
@@ -15,6 +16,7 @@ class MyExporter;
 class MyAnimation
 {
     friend class MyExporter;
+    friend class MyImporter;
 
 public:
     MyAnimation(std::string name, float duration);

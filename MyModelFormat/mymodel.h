@@ -16,7 +16,7 @@ public:
     std::vector<glm::vec2>& getUVs();
     std::vector<uint32_t>& getIndices();
     std::vector<MyNode>& getBones();
-    std::vector<MyAnimation>& getAnimations();
+    std::vector<MyAnimation*>& getAnimations();
 
     MyNode* findBone(std::string name);
 
@@ -27,7 +27,7 @@ private:
     std::vector<glm::vec2> vUV;
 
     std::vector<MyNode> vBone;
-    std::vector<MyAnimation> vAnimation;
+    std::vector<MyAnimation*> vAnimation;
 };
 
 #endif // MYMODEL_H

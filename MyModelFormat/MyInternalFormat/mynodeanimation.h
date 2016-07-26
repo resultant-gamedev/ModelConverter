@@ -27,6 +27,7 @@ struct Transformation
 class MyAnimation;
 class MyNode;
 class MyExporter;
+class MyImporter;
 
 /**
  * @brief The MyNodeAnimation class
@@ -37,6 +38,7 @@ class MyNodeAnimation
     friend class MyAnimation;
     friend class MyNode;
     friend class MyExporter;
+    friend class MyImporter;
 
 public:
     ~MyNodeAnimation();
