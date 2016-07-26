@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+namespace MyModelFormat
+{
+
 class MyStack
 {
 public:
@@ -26,5 +29,7 @@ private:
     MyStack* parent;
     std::vector<MyStack*> children;
 };
+
+}
 
 #endif // MYSTACK_H

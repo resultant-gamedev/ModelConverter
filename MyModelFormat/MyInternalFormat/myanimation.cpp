@@ -2,38 +2,38 @@
 #include "mynodeanimation.h"
 #include "mynode.h"
 
-MyAnimation::MyAnimation(std::string name, float duration)
+MyModelFormat::MyAnimation::MyAnimation(std::string name, float duration)
     : name(name)
     , duration(duration)
 {
 
 }
 
-MyAnimation::~MyAnimation()
+MyModelFormat::MyAnimation::~MyAnimation()
 {
-    for(MyNodeAnimation* nodeAni : nodeAnimations)
+    for(MyModelFormat::MyNodeAnimation* nodeAni : nodeAnimations)
     {
         delete nodeAni;
     }
 }
 
-std::string &MyAnimation::getName()
+std::string &MyModelFormat::MyAnimation::getName()
 {
     return name;
 }
 
-float MyAnimation::getDuration()
+float MyModelFormat::MyAnimation::getDuration()
 {
     return duration;
 }
 
-void MyAnimation::addNodeAnimation(MyNode *node)
+void MyModelFormat::MyAnimation::addNodeAnimation(MyModelFormat::MyNode *node)
 {
-    nodeAnimations.emplace_back(new MyNodeAnimation(node));
+    nodeAnimations.emplace_back(new MyModelFormat::MyNodeAnimation(node));
     node->addNodeAnimation(nodeAnimations.back());
 }
 
-MyNodeAnimation *MyAnimation::getLastNodeAnim()
+MyModelFormat::MyNodeAnimation *MyModelFormat::MyAnimation::getLastNodeAnim()
 {
     return nodeAnimations.back();
 }

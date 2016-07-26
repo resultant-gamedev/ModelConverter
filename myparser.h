@@ -43,7 +43,7 @@ private:
     FbxManager* pManager;
     FbxScene* scene;
 
-    MyModel model;
+    MyModelFormat::MyModel model;
 };
 
 #endif // MYPARSER_H

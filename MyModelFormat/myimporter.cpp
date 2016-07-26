@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <functional>
 
-MyImporter::MyImporter(std::string filename,
-                       MyModel& model)
+MyModelFormat::MyImporter::MyImporter(std::string filename,
+                                      MyModelFormat::MyModel& model)
     : file(filename)
     , model(model)
 {
@@ -18,19 +18,19 @@ MyImporter::MyImporter(std::string filename,
     importModel();
 }
 
-MyImporter::~MyImporter()
+MyModelFormat::MyImporter::~MyImporter()
 {
-    for(MyStack* stack : stacks)
+    for(MyModelFormat::MyStack* stack : stacks)
     {
         delete stack;
     }
 }
 
-void MyImporter::importModel()
+void MyModelFormat::MyImporter::importModel()
 {
-    auto findCorrectStack = [&](std::string name, std::function<void(MyStack*)> getData)
+    auto findCorrectStack = [&](std::string name, std::function<void(MyModelFormat::MyStack*)> getData)
     {
-        for(MyStack* stack : stacks)
+        for(MyModelFormat::MyStack* stack : stacks)
         {
             if(name == stack->getName())
             {
@@ -42,15 +42,15 @@ void MyImporter::importModel()
 
     using std::placeholders::_1;
 
-    findCorrectStack(MESH, std::bind(&MyImporter::importMesh, this, _1));
-    findCorrectStack(BONES, std::bind(&MyImporter::importBones, this, _1));
-    findCorrectStack(BONECONNECTIONS, std::bind(&MyImporter::importConnections, this, _1));
-    findCorrectStack(ANIMATIONS, std::bind(&MyImporter::importAnimations, this, _1));
+    findCorrectStack(MESH, std::bind(&MyModelFormat::MyImporter::importMesh, this, _1));
+    findCorrectStack(BONES, std::bind(&MyModelFormat::MyImporter::importBones, this, _1));
+    findCorrectStack(BONECONNECTIONS, std::bind(&MyModelFormat::MyImporter::importConnections, this, _1));
+    findCorrectStack(ANIMATIONS, std::bind(&MyModelFormat::MyImporter::importAnimations, this, _1));
 }
 
-void MyImporter::importMesh(MyStack *stack)
+void MyModelFormat::MyImporter::importMesh(MyModelFormat::MyStack *stack)
 {
-    for(MyStack* child : stack->getChildren())
+    for(MyModelFormat::MyStack* child : stack->getChildren())
     {
         if(MESHDATA == child->getName())
         {
@@ -94,14 +94,14 @@ void MyImporter::importMesh(MyStack *stack)
     }
 }
 
-void MyImporter::importBones(MyStack* stack)
+void MyModelFormat::MyImporter::importBones(MyModelFormat::MyStack* stack)
 {
-    for(MyStack* boneStack : stack->getChildren())
+    for(MyModelFormat::MyStack* boneStack : stack->getChildren())
     {
         model.getBones().emplace_back(boneStack->getName());
-        MyNode& currentBone = model.getBones().back();
+        MyModelFormat::MyNode& currentBone = model.getBones().back();
 
-        for(MyStack* boneInfoStack : boneStack->getChildren())
+        for(MyModelFormat::MyStack* boneInfoStack : boneStack->getChildren())
         {
             if(BINDPOSEMATRIX == boneInfoStack->getName())
             {
@@ -139,7 +139,7 @@ void MyImporter::importBones(MyStack* stack)
     }
 }
 
-void MyImporter::importConnections(MyStack* stack)
+void MyModelFormat::MyImporter::importConnections(MyModelFormat::MyStack* stack)
 {
     std::istringstream sstream(stack->getContent());
     std::string connection;
@@ -153,8 +153,8 @@ void MyImporter::importConnections(MyStack* stack)
         std::istringstream constream(connection);
         constream >> name1 >> dummy >> name2;
 
-        MyNode* parent = model.findBone(name1);
-        MyNode* child = model.findBone(name2);
+        MyModelFormat::MyNode* parent = model.findBone(name1);
+        MyModelFormat::MyNode* child = model.findBone(name2);
 
         assert(parent);
         assert(child);
@@ -164,13 +164,13 @@ void MyImporter::importConnections(MyStack* stack)
     }
 }
 
-void MyImporter::importAnimations(MyStack* stack)
+void MyModelFormat::MyImporter::importAnimations(MyModelFormat::MyStack* stack)
 {
-    for(MyStack* aniStack : stack->getChildren())
+    for(MyModelFormat::MyStack* aniStack : stack->getChildren())
     {
         float duration;
 
-        for(MyStack* durationChild : aniStack->getChildren())
+        for(MyModelFormat::MyStack* durationChild : aniStack->getChildren())
         {
             if(durationChild->getName() == ANIMATIONDURATION)
             {
@@ -180,20 +180,20 @@ void MyImporter::importAnimations(MyStack* stack)
             }
         }
 
-        model.getAnimations().emplace_back(new MyAnimation(aniStack->getName(), duration));
-        MyAnimation* animation = model.getAnimations().back();
+        model.getAnimations().emplace_back(new MyModelFormat::MyAnimation(aniStack->getName(), duration));
+        MyModelFormat::MyAnimation* animation = model.getAnimations().back();
 
-        for(MyStack* nodeAnimStack : aniStack->getChildren())
+        for(MyModelFormat::MyStack* nodeAnimStack : aniStack->getChildren())
         {
             if(nodeAnimStack->getName() == NODEANIMATION)
             {
-                for(MyStack* nodeAnimChild : nodeAnimStack->getChildren())
+                for(MyModelFormat::MyStack* nodeAnimChild : nodeAnimStack->getChildren())
                 {
-                    MyNode* bone = model.findBone(nodeAnimChild->getName());
+                    MyModelFormat::MyNode* bone = model.findBone(nodeAnimChild->getName());
                     assert(bone);
 
                     animation->addNodeAnimation(bone);
-                    MyNodeAnimation* nodeAnim = animation->getLastNodeAnim();
+                    MyModelFormat::MyNodeAnimation* nodeAnim = animation->getLastNodeAnim();
 
                     glm::vec3 s, t, r;
                     float d;
@@ -217,9 +217,9 @@ void MyImporter::importAnimations(MyStack* stack)
     }
 }
 
-void MyImporter::loadStacks()
+void MyModelFormat::MyImporter::loadStacks()
 {
-    MyStack* currentStack = NULL;
+    MyModelFormat::MyStack* currentStack = NULL;
     std::string line;
 
     while(std::getline(file, line))
@@ -232,12 +232,12 @@ void MyImporter::loadStacks()
 
             if(!currentStack)
             {
-                stacks.emplace_back(new MyStack(name));
+                stacks.emplace_back(new MyModelFormat::MyStack(name));
                 currentStack = stacks.back();
             }
             else
             {
-                MyStack* tmpStack = new MyStack(name, currentStack);
+                MyStack* tmpStack = new MyModelFormat::MyStack(name, currentStack);
                 currentStack->addChild(tmpStack);
                 currentStack = tmpStack;
             }
@@ -250,8 +250,6 @@ void MyImporter::loadStacks()
         {
             if(currentStack)
                 currentStack->addContent(line);
-            else
-                std::cout << line << std::endl;
         }
     }
 }

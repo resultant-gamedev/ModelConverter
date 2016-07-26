@@ -13,9 +13,7 @@ void MyParser::importFromFile(const string &filename)
 {
     if(checkFileType(filename))
     {
-        std::cout << "my format" << std::endl;
-
-        MyImporter imp(filename, model);
+        MyModelFormat::MyImporter imp(filename, model);
 
         return;
     }
@@ -48,7 +46,7 @@ void MyParser::importFromFile(const string &filename)
 
 void MyParser::exportToFile(const string &filename)
 {
-    MyExporter exporter(filename, model);
+    MyModelFormat::MyExporter exporter(filename, model);
 }
 
 void MyParser::loadNode(FbxNode *node)
@@ -244,7 +242,7 @@ void MyParser::loadNodeKeyframe(FbxNode *node)
 
             std::string name = node->GetName();
             model.getAnimations()[i]->addNodeAnimation(model.findBone(name));
-            MyNodeAnimation* nodeAnim = model.getAnimations()[i]->getLastNodeAnim();
+            MyModelFormat::MyNodeAnimation* nodeAnim = model.getAnimations()[i]->getLastNodeAnim();
 
             struct OneChannelTrans
             {
@@ -394,7 +392,7 @@ void MyParser::loadSkelett(FbxMesh *mesh)
 
             loadNodeKeyframe(bone);
 
-            MyNode* node = model.findBone(bone->GetName());
+            MyModelFormat::MyNode* node = model.findBone(bone->GetName());
 
             // Get the bind pose
             FbxAMatrix bindPoseMatrix;
@@ -424,14 +422,14 @@ void MyParser::createAnimations()
         FbxAnimStack *animStack = (FbxAnimStack*)scene->GetSrcObject<FbxAnimStack>(i);
 
         model.getAnimations().emplace_back(
-                    new MyAnimation (animStack->GetName(),
+                    new MyModelFormat::MyAnimation (animStack->GetName(),
                                      animStack->GetLocalTimeSpan().GetDuration().GetSecondDouble()));
     }
 }
 
 void MyParser::createLinks()
 {
-    for(MyNode& bone : model.getBones())
+    for(MyModelFormat::MyNode& bone : model.getBones())
     {
         FbxNode* fbxNode = scene->FindNodeByName(bone.getName().c_str());
 
@@ -439,7 +437,7 @@ void MyParser::createLinks()
         for(int i = 0; i < childCount; i++)
         {
             FbxNode* child = fbxNode->GetChild(i);
-            MyNode* myChild = model.findBone(child->GetName());
+            MyModelFormat::MyNode* myChild = model.findBone(child->GetName());
 
             if(myChild)
                 bone.addChild(myChild);

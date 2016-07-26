@@ -7,6 +7,9 @@
 
 #include "extern/glm/glm.hpp"
 
+namespace MyModelFormat
+{
+
 struct Transformation
 {
     Transformation(glm::vec3 s,
@@ -27,7 +30,6 @@ struct Transformation
 class MyAnimation;
 class MyNode;
 class MyExporter;
-class MyImporter;
 
 /**
  * @brief The MyNodeAnimation class
@@ -38,7 +40,6 @@ class MyNodeAnimation
     friend class MyAnimation;
     friend class MyNode;
     friend class MyExporter;
-    friend class MyImporter;
 
 public:
     ~MyNodeAnimation();
@@ -54,5 +55,8 @@ private:
     std::vector<Transformation> transformations;
     MyNode* node;
 };
+
+}
+
 
 #endif // MYNODEANIMATION_H

@@ -1,7 +1,8 @@
 #include "myexporter.h"
+#include <iostream>
 
-MyExporter::MyExporter(std::string filename,
-                       MyModel &model)
+MyModelFormat::MyExporter::MyExporter(std::string filename,
+                                      MyModelFormat::MyModel &model)
     : model(model)
 {
     if(std::string::npos == filename.find(MYFILETYPE))
@@ -20,12 +21,12 @@ MyExporter::MyExporter(std::string filename,
     file.close();
 }
 
-MyExporter::~MyExporter()
+MyModelFormat::MyExporter::~MyExporter()
 {
 
 }
 
-void MyExporter::exportModel()
+void MyModelFormat::MyExporter::exportModel()
 {
     exportMesh();
     exportBones();
@@ -35,7 +36,7 @@ void MyExporter::exportModel()
     file << std::endl;
 }
 
-void MyExporter::exportMesh()
+void MyModelFormat::MyExporter::exportMesh()
 {
     std::string prefix("");
 
@@ -83,14 +84,14 @@ void MyExporter::exportMesh()
     file << "}" << std::endl;
 }
 
-void MyExporter::exportBones()
+void MyModelFormat::MyExporter::exportBones()
 {
     std::string prefix("");
 
     file << BONES << " {" << std::endl;
     prefix += '\t';
 
-        for(MyNode& bone : model.getBones())
+        for(MyModelFormat::MyNode& bone : model.getBones())
         {
             file << prefix << bone.getName() << " {" << std::endl;
             prefix += '\t';
@@ -132,7 +133,7 @@ void MyExporter::exportBones()
     file << "}" << std::endl;
 }
 
-void MyExporter::exportConnections()
+void MyModelFormat::MyExporter::exportConnections()
 {
     std::string prefix("");
 
@@ -152,9 +153,9 @@ void MyExporter::exportConnections()
 
         std::vector<NodeRelation> relations;
 
-        for(MyNode& node : model.getBones())
+        for(MyModelFormat::MyNode& node : model.getBones())
         {
-            for(MyNode* child : node.getChildren())
+            for(MyModelFormat::MyNode* child : node.getChildren())
             {
                 relations.emplace_back(node.getName(), child->getName());
             }
@@ -171,14 +172,14 @@ void MyExporter::exportConnections()
     file << "}" << std::endl;
 }
 
-void MyExporter::exportAnimations()
+void MyModelFormat::MyExporter::exportAnimations()
 {
     std::string prefix("");
 
     file << ANIMATIONS << " {" << std::endl;
     prefix += '\t';
 
-        for(MyAnimation* animation : model.getAnimations())
+        for(MyModelFormat::MyAnimation* animation : model.getAnimations())
         {
             file << prefix << animation->getName() << " {" << std::endl;
             prefix += '\t';
@@ -194,7 +195,7 @@ void MyExporter::exportAnimations()
                 file << prefix << NODEANIMATION << " {" << std::endl;
                 prefix += '\t';
 
-                    for(MyNodeAnimation* nodeAnim : animation->nodeAnimations)
+                    for(MyModelFormat::MyNodeAnimation* nodeAnim : animation->nodeAnimations)
                     {
                         if(nodeAnim->transformations.size())
                         {
@@ -204,7 +205,7 @@ void MyExporter::exportAnimations()
                                 uint32_t count = nodeAnim->transformations.size();
                                 for(uint32_t i = 0; i < count; i++)
                                 {
-                                    Transformation& trans = nodeAnim->transformations[i];
+                                    MyModelFormat::Transformation& trans = nodeAnim->transformations[i];
 
                                     file << prefix
                                          << trans.scale.x << "," << trans.scale.y << "," << trans.scale.z << ","

@@ -1,43 +1,44 @@
 #include "mystack.h"
 
-MyStack::MyStack(std::string name, MyStack* parent)
+MyModelFormat::MyStack::MyStack(std::string name,
+                                MyModelFormat::MyStack* parent)
     : name(name)
     , parent(parent)
 {
 
 }
 
-MyStack::~MyStack()
+MyModelFormat::MyStack::~MyStack()
 {
 
 }
 
-MyStack *MyStack::getParent()
+MyModelFormat::MyStack *MyModelFormat::MyStack::getParent()
 {
     return parent;
 }
 
-std::vector<MyStack *> &MyStack::getChildren()
+std::vector<MyModelFormat::MyStack *> &MyModelFormat::MyStack::getChildren()
 {
     return children;
 }
 
-std::string MyStack::getName()
+std::string MyModelFormat::MyStack::getName()
 {
     return name;
 }
 
-void MyStack::addChild(MyStack *child)
+void MyModelFormat::MyStack::addChild(MyModelFormat::MyStack *child)
 {
     children.emplace_back(child);
 }
 
-void MyStack::addContent(std::string cont)
+void MyModelFormat::MyStack::addContent(std::string cont)
 {
     content += cont;
 }
 
-std::string &MyStack::getContent()
+std::string &MyModelFormat::MyStack::getContent()
 {
     return content;
 }

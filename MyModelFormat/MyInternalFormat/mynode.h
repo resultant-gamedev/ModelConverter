@@ -7,6 +7,9 @@
 
 #include "extern/glm/glm.hpp"
 
+namespace MyModelFormat
+{
+
 struct Bone
 {
     Bone(int v, float b)
@@ -49,7 +52,7 @@ public:
     glm::mat4 getBindPose();
     glm::mat4 getInvBindPose();
 
-private:    
+private:
     void addNodeAnimation(MyNodeAnimation* nodeAnim);
 
     MyNode* mParent;
@@ -62,5 +65,7 @@ private:
     glm::mat4 bindPose;
     glm::mat4 invBindPose;
 };
+
+}
 
 #endif // MYNODE_H

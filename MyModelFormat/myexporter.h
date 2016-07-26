@@ -6,12 +6,14 @@
 #include "MyInternalFormat/myidentifier.h"
 
 #include <fstream>
-#include <iostream>
+
+namespace MyModelFormat
+{
 
 class MyExporter
 {
 public:
-    MyExporter(std::string filename, MyModel& model);
+    MyExporter(std::string filename, MyModelFormat::MyModel& model);
     ~MyExporter();
 
 private:
@@ -24,7 +26,9 @@ private:
     void exportNodeAnims();
 
     std::ofstream file;
-    MyModel& model;
+    MyModelFormat::MyModel& model;
 };
+
+}
 
 #endif // MYEXPORTER_H

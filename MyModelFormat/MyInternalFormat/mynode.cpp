@@ -1,7 +1,7 @@
 #include "mynode.h"
 
-MyNode::MyNode(std::string name,
-               MyNode *parent)
+MyModelFormat::MyNode::MyNode(std::string name,
+                              MyModelFormat::MyNode *parent)
     : mParent(parent)
     , name(name)
     , bindPose(0.0f)
@@ -10,70 +10,70 @@ MyNode::MyNode(std::string name,
 
 }
 
-MyNode::~MyNode()
+MyModelFormat::MyNode::~MyNode()
 {
 
 }
 
-void MyNode::setParent(MyNode *parent)
+void MyModelFormat::MyNode::setParent(MyModelFormat::MyNode *parent)
 {
     mParent = parent;
 }
 
-void MyNode::addChild(MyNode *child)
+void MyModelFormat::MyNode::addChild(MyModelFormat::MyNode *child)
 {
     mChildren.emplace_back(child);
 }
 
-void MyNode::addBoneDep(int vertexIndex, float boneWeight)
+void MyModelFormat::MyNode::addBoneDep(int vertexIndex, float boneWeight)
 {
     boneData.emplace_back(vertexIndex, boneWeight);
 }
 
-MyNode *MyNode::getParent()
+MyModelFormat::MyNode *MyModelFormat::MyNode::getParent()
 {
     return mParent;
 }
 
-std::vector<MyNode *> &MyNode::getChildren()
+std::vector<MyModelFormat::MyNode *> &MyModelFormat::MyNode::getChildren()
 {
     return mChildren;
 }
 
-std::string &MyNode::getName()
+std::string &MyModelFormat::MyNode::getName()
 {
     return name;
 }
 
-void MyNode::setBindPose(glm::mat4 m)
+void MyModelFormat::MyNode::setBindPose(glm::mat4 m)
 {
     bindPose = m;
     invBindPose = glm::inverse(bindPose);
 }
 
-glm::mat4 MyNode::getBindPose()
+glm::mat4 MyModelFormat::MyNode::getBindPose()
 {
     return bindPose;
 }
 
-glm::mat4 MyNode::getInvBindPose()
+glm::mat4 MyModelFormat::MyNode::getInvBindPose()
 {
     return invBindPose;
 }
 
-void MyNode::addNodeAnimation(MyNodeAnimation *nodeAnim)
+void MyModelFormat::MyNode::addNodeAnimation(MyModelFormat::MyNodeAnimation *nodeAnim)
 {
     nodeAnimations.emplace_back(nodeAnim);
 }
 
-Bone &MyNode::getBoneDep(unsigned int index)
+MyModelFormat::Bone &MyModelFormat::MyNode::getBoneDep(unsigned int index)
 {
     assert(index < boneData.size());
 
     return boneData[index];
 }
 
-unsigned int MyNode::getBoneDepCount()
+unsigned int MyModelFormat::MyNode::getBoneDepCount()
 {
     return boneData.size();
 }

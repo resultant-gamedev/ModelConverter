@@ -6,28 +6,32 @@
 
 #include <fstream>
 
-#include <iostream>
+namespace MyModelFormat
+{
 
 class MyImporter
 {
 public:
-    MyImporter(std::string filename, MyModel& model);
+    MyImporter(std::string filename,
+               MyModelFormat::MyModel& model);
     ~MyImporter();
 
 private:
     void importModel();
 
-    void importMesh(MyStack* stack);
-    void importBones(MyStack* stack);
-    void importConnections(MyStack* stack);
-    void importAnimations(MyStack* stack);
+    void importMesh(MyModelFormat::MyStack* stack);
+    void importBones(MyModelFormat::MyStack* stack);
+    void importConnections(MyModelFormat::MyStack* stack);
+    void importAnimations(MyModelFormat::MyStack* stack);
 
     void loadStacks();
 
     std::ifstream file;
-    MyModel& model;
+    MyModelFormat::MyModel& model;
 
-    std::vector<MyStack*> stacks;
+    std::vector<MyModelFormat::MyStack*> stacks;
 };
+
+}
 
 #endif // MYIMPORTER_H

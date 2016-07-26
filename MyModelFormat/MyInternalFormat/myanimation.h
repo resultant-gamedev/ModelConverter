@@ -4,6 +4,9 @@
 #include <vector>
 #include <string>
 
+namespace MyModelFormat
+{
+
 class MyNode;
 class MyNodeAnimation;
 class MyExporter;
@@ -33,5 +36,7 @@ private:
     std::string name;
     float duration;
 };
+
+}
 
 #endif // MYANIMATION_H
