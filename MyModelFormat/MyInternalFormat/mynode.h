@@ -34,6 +34,7 @@ public:
            MyNode* parent = 0);
     ~MyNode();
 
+    void setParent(MyNode* parent);
     void addChild(MyNode* child);
     void addBoneDep(int vertexIndex, float boneWeight);
 

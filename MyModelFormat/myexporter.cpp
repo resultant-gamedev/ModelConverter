@@ -2,9 +2,13 @@
 
 MyExporter::MyExporter(std::string filename,
                        MyModel &model)
-    : file(filename, std::ios_base::out | std::ios_base::trunc)
-    , model(model)
+    : model(model)
 {
+    if(std::string::npos == filename.find(MYFILETYPE))
+        filename += MYFILETYPE;
+
+    file.open(filename, std::ios_base::out | std::ios_base::trunc);
+
     if(!file.is_open())
     {
         std::cerr << "can't open " << filename << " for export" << std::endl;
@@ -35,10 +39,10 @@ void MyExporter::exportMesh()
 {
     std::string prefix("");
 
-    file << "Mesh {" << std::endl;
+    file << MESH << " {" << std::endl;
     prefix += '\t';
 
-        file << prefix << "Positions {" << std::endl;
+        file << prefix << POSITION << " {" << std::endl;
         prefix += '\t';
 
             for(uint32_t i = 0; i < model.getPositions().size(); i++)
@@ -56,7 +60,7 @@ void MyExporter::exportMesh()
         prefix.resize(prefix.size()-1);
         file << prefix << "}" << std::endl;
 
-        file << prefix << "Data {" << std::endl;
+        file << prefix << MESHDATA << " {" << std::endl;
         prefix += '\t';
 
             uint32_t size = model.getIndices().size();
@@ -83,7 +87,7 @@ void MyExporter::exportBones()
 {
     std::string prefix("");
 
-    file << "Bones {" << std::endl;
+    file << BONES << " {" << std::endl;
     prefix += '\t';
 
         for(MyNode& bone : model.getBones())
@@ -92,7 +96,7 @@ void MyExporter::exportBones()
             prefix += '\t';
 
                 // print bindPose matrix
-                file << prefix << "BindPose {" << std::endl;
+                file << prefix << BINDPOSEMATRIX << " {" << std::endl;
                 prefix += '\t';
 
                     float* m = &bone.getBindPose()[0][0];
@@ -106,7 +110,7 @@ void MyExporter::exportBones()
                 file << prefix << "}" << std::endl;
 
                 // print bone weight with index
-                file << prefix << "BoneWeight {" << std::endl;
+                file << prefix << BONEWEIGHT << " {" << std::endl;
                 prefix += '\t';
 
                     for(uint32_t i = 0; i < bone.getBoneDepCount(); i++)
@@ -132,16 +136,36 @@ void MyExporter::exportConnections()
 {
     std::string prefix("");
 
-    file << "Connections {" << std::endl;
+    file << BONECONNECTIONS << " {" << std::endl;
     prefix += '\t';
+
+        struct NodeRelation
+        {
+            NodeRelation(std::string p,
+                         std::string c)
+                : parent(p)
+                , child(c){}
+
+            std::string parent;
+            std::string child;
+        };
+
+        std::vector<NodeRelation> relations;
 
         for(MyNode& node : model.getBones())
         {
             for(MyNode* child : node.getChildren())
             {
-                std::cout << node.getName() << " : " << child->getName() << std::endl;
-                file << prefix << node.getName() << " : " << child->getName() << std::endl;
+                relations.emplace_back(node.getName(), child->getName());
             }
+        }
+
+        uint32_t count = relations.size();
+        for(uint32_t i = 0; i < count; i++)
+        {
+            file << prefix << relations[i].parent << " : "
+                 << relations[i].child << ((i != count-1) ? "," : "")
+                 << std::endl;
         }
 
     file << "}" << std::endl;
@@ -151,10 +175,52 @@ void MyExporter::exportAnimations()
 {
     std::string prefix("");
 
-    file << "Animations {" << std::endl;
+    file << ANIMATIONS << " {" << std::endl;
     prefix += '\t';
 
+        for(MyAnimation& animation : model.getAnimations())
+        {
+            file << prefix << animation.getName() << " {" << std::endl;
+            prefix += '\t';
 
+                file << prefix << ANIMATIONDURATION << " {" << std::endl;
+                prefix += '\t';
+
+                    file << prefix << animation.getDuration() << std::endl;
+
+                prefix.resize(prefix.size()-1);
+                file << prefix << "}" << std::endl;
+
+                file << prefix << NODEANIMATION << " {" << std::endl;
+                prefix += '\t';
+
+                    for(MyNodeAnimation* nodeAnim : animation.nodeAnimations)
+                    {
+                        file << prefix << nodeAnim->node->getName() << " {" << std::endl;
+                        prefix += '\t';
+
+                            uint32_t count = nodeAnim->transformations.size();
+                            for(uint32_t i = 0; i < count; i++)
+                            {
+                                Transformation& trans = nodeAnim->transformations[i];
+
+                                file << prefix
+                                     << trans.scale.x << "," << trans.scale.y << "," << trans.scale.z << ","
+                                     << trans.rotate.x << "," << trans.rotate.y << "," << trans.rotate.z << ","
+                                     << trans.translate.x << "," << trans.translate.y << "," << trans.translate.z << ","
+                                     << trans.deadLine << ((i != count-1) ? "," : "") << std::endl;
+                            }
+
+                        prefix.resize(prefix.size()-1);
+                        file << prefix << "}" << std::endl;
+                    }
+
+                prefix.resize(prefix.size()-1);
+                file << prefix << "}" << std::endl;
+
+            prefix.resize(prefix.size()-1);
+            file << prefix << "}" << std::endl;
+        }
 
     file << "}" << std::endl;
 }

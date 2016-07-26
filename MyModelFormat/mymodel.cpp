@@ -39,3 +39,14 @@ std::vector<MyAnimation> &MyModel::getAnimations()
 {
     return vAnimation;
 }
+
+MyNode *MyModel::findBone(std::string name)
+{
+    for(MyNode& bone : vBone)
+    {
+        if(bone.getName() == name)
+            return &bone;
+    }
+
+    return NULL;
+}

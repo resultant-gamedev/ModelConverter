@@ -26,6 +26,7 @@ struct Transformation
 
 class MyAnimation;
 class MyNode;
+class MyExporter;
 
 /**
  * @brief The MyNodeAnimation class
@@ -33,10 +34,11 @@ class MyNode;
  */
 class MyNodeAnimation
 {
-public:
     friend class MyAnimation;
     friend class MyNode;
+    friend class MyExporter;
 
+public:
     ~MyNodeAnimation();
 
     void addTransformation(glm::vec3 scale,
@@ -45,8 +47,7 @@ public:
                            float deadline);
 
 private:
-    MyNodeAnimation();
-    void connectNode(MyNode* node);
+    MyNodeAnimation(MyNode* node);
 
     std::vector<Transformation> transformations;
     MyNode* node;

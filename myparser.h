@@ -14,6 +14,7 @@
 
 #include "MyModelFormat/mymodel.h"
 #include "MyModelFormat/myexporter.h"
+#include "MyModelFormat/myimporter.h"
 
 inline void coutVec3(const glm::vec3& v)
 {
@@ -35,11 +36,9 @@ private:
     void loadNodeKeyframe(FbxNode* node);
     void loadSkelett(FbxMesh* mesh);
     void createAnimations();
+    void createLinks();
 
-    void exportMesh();
-    void exportAnimation();
-
-    MyNode* findNode(std::string& name);
+    bool checkFileType(const std::string& filename);
 
     FbxManager* pManager;
     FbxScene* scene;

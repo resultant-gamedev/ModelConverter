@@ -1,9 +1,9 @@
 #ifndef MYMODEL_H
 #define MYMODEL_H
 
-#include "MyModelFormat/mynode.h"
-#include "MyModelFormat/mynodeanimation.h"
-#include "MyModelFormat/myanimation.h"
+#include "MyInternalFormat/mynode.h"
+#include "MyInternalFormat/mynodeanimation.h"
+#include "MyInternalFormat/myanimation.h"
 
 class MyModel
 {
@@ -17,6 +17,8 @@ public:
     std::vector<uint32_t>& getIndices();
     std::vector<MyNode>& getBones();
     std::vector<MyAnimation>& getAnimations();
+
+    MyNode* findBone(std::string name);
 
 private:
     std::vector<glm::vec4> vPosition;

@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     if(argc != 3)
     {
         imp.importFromFile("data/TestBin.fbx");
-        imp.exportToFile("");
+        imp.exportToFile("data/test.mym");
     }
     else
     {

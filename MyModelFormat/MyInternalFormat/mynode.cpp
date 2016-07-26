@@ -15,6 +15,11 @@ MyNode::~MyNode()
 
 }
 
+void MyNode::setParent(MyNode *parent)
+{
+    mParent = parent;
+}
+
 void MyNode::addChild(MyNode *child)
 {
     mChildren.emplace_back(child);

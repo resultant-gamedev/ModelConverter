@@ -11,6 +11,15 @@ MyParser::~MyParser()
 
 void MyParser::importFromFile(const string &filename)
 {
+    if(checkFileType(filename))
+    {
+        std::cout << "my format" << std::endl;
+
+        MyImporter imp(filename, model);
+
+        return;
+    }
+
     pManager = FbxManager::Create();
 
     FbxIOSettings *ios = FbxIOSettings::Create(pManager, IOSROOT);
@@ -32,17 +41,18 @@ void MyParser::importFromFile(const string &filename)
 
     createAnimations();
     loadNode(scene->GetRootNode());
+    createLinks();
 
     pManager->Destroy();
 }
 
 void MyParser::exportToFile(const string &filename)
 {
-    MyExporter exporter("data/test.my", model);
+    MyExporter exporter(filename, model);
 }
 
 void MyParser::loadNode(FbxNode *node)
-{
+{   
     for (int i = 0; i < node->GetNodeAttributeCount(); i++)
     {
         FbxNodeAttribute *nodeAttributeFbx = node->GetNodeAttributeByIndex(i);
@@ -233,7 +243,7 @@ void MyParser::loadNodeKeyframe(FbxNode *node)
             FbxAnimCurve *scalingCurve = node->LclScaling.GetCurve(animLayer);
 
             std::string name = node->GetName();
-            model.getAnimations()[i].addNodeAnimation(findNode(name));
+            model.getAnimations()[i].addNodeAnimation(model.findBone(name));
             MyNodeAnimation* nodeAnim = model.getAnimations()[i].getLastNodeAnim();
 
             struct OneChannelTrans
@@ -380,12 +390,11 @@ void MyParser::loadSkelett(FbxMesh *mesh)
             if(parent)
                  parentName = parent->GetName();
 
-            model.getBones().emplace_back(bone->GetName(), findNode(parentName));
+            model.getBones().emplace_back(bone->GetName(), model.findBone(parentName));
 
             loadNodeKeyframe(bone);
 
-            std::string name = bone->GetName();
-            MyNode* node = findNode(name);
+            MyNode* node = model.findBone(bone->GetName());
 
             // Get the bind pose
             FbxAMatrix bindPoseMatrix;
@@ -419,13 +428,34 @@ void MyParser::createAnimations()
     }
 }
 
-MyNode *MyParser::findNode(string &name)
+void MyParser::createLinks()
 {
     for(MyNode& bone : model.getBones())
     {
-        if(bone.getName() == name)
-            return &bone;
-    }
+        FbxNode* fbxNode = scene->FindNodeByName(bone.getName().c_str());
 
-    return NULL;
+        int childCount = fbxNode->GetChildCount();
+        for(int i = 0; i < childCount; i++)
+        {
+            FbxNode* child = fbxNode->GetChild(i);
+            MyNode* myChild = model.findBone(child->GetName());
+
+            if(myChild)
+                bone.addChild(myChild);
+        }
+    }
+}
+
+bool MyParser::checkFileType(const string &filename)
+{
+    std::string fbxEnding = ".fbx";
+    std::string myEnding = MYFILETYPE;
+
+    if(std::string::npos != filename.find(fbxEnding))
+        return false;
+
+    if(std::string::npos != filename.find(MYFILETYPE))
+        return true;
+
+    return false;
 }

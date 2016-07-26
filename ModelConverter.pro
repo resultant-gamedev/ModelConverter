@@ -7,15 +7,17 @@ LIBS += -L$$PWD/bin/ -lfbxsdk -ldl
 
 SOURCES += main.cpp \
     myparser.cpp \
-    MyModelFormat/mynode.cpp \
-    MyModelFormat/mynodeanimation.cpp \
-    MyModelFormat/myanimation.cpp \
+    MyModelFormat/MyInternalFormat/mynode.cpp \
+    MyModelFormat/MyInternalFormat/mynodeanimation.cpp \
+    MyModelFormat/MyInternalFormat/myanimation.cpp \
     MyModelFormat/mymodel.cpp \
-    MyModelFormat/myexporter.cpp
+    MyModelFormat/myexporter.cpp \
+    MyModelFormat/myimporter.cpp \
+    MyModelFormat/MyInternalFormat/mystack.cpp
 
 HEADERS += \
     myparser.h \
-    MyModelFormat/mynode.h \
+    MyModelFormat/MyInternalFormat/mynode.h \
     -L/extern \
     extern/glm/detail/_features.hpp \
     extern/glm/detail/_fixes.hpp \
@@ -160,10 +162,14 @@ HEADERS += \
     extern/glm/vec4.hpp \
     extern/glm/vector_relational.hpp \
     Common/vab.h \
-    MyModelFormat/mynodeanimation.h \
-    MyModelFormat/myanimation.h \
+    MyModelFormat/MyInternalFormat/mynodeanimation.h \
+    MyModelFormat/MyInternalFormat/myanimation.h \
+    MyModelFormat/MyInternalFormat/myfiletype.h \
     MyModelFormat/mymodel.h \
-    MyModelFormat/myexporter.h
+    MyModelFormat/myexporter.h \
+    MyModelFormat/myimporter.h \
+    MyModelFormat/MyInternalFormat/myidentifier.h \
+    MyModelFormat/MyInternalFormat/mystack.h
 
 DISTFILES += \
     data/Test.png \

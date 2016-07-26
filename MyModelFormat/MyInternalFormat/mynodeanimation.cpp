@@ -1,7 +1,8 @@
 #include "mynodeanimation.h"
 #include "myanimation.h"
 
-MyNodeAnimation::MyNodeAnimation()
+MyNodeAnimation::MyNodeAnimation(MyNode* node)
+    : node(node)
 {
 
 }
@@ -17,9 +18,4 @@ void MyNodeAnimation::addTransformation(glm::vec3 scale,
                                         float deadline)
 {
     transformations.emplace_back(scale, translate, rotate, deadline);
-}
-
-void MyNodeAnimation::connectNode(MyNode *node)
-{
-    this->node = node;
 }

@@ -29,7 +29,7 @@ float MyAnimation::getDuration()
 
 void MyAnimation::addNodeAnimation(MyNode *node)
 {
-    nodeAnimations.emplace_back(new MyNodeAnimation);
+    nodeAnimations.emplace_back(new MyNodeAnimation(node));
     node->addNodeAnimation(nodeAnimations.back());
 }
 

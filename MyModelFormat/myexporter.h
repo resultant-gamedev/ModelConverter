@@ -2,6 +2,8 @@
 #define MYEXPORTER_H
 
 #include "mymodel.h"
+#include "MyInternalFormat/myfiletype.h"
+#include "MyInternalFormat/myidentifier.h"
 
 #include <fstream>
 #include <iostream>
