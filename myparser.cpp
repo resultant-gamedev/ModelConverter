@@ -1,4 +1,6 @@
 #include "myparser.h"
+#include <iostream>
+#include <algorithm>
 
 MyParser::MyParser()
 {
@@ -40,6 +42,7 @@ void MyParser::importFromFile(const string &filename)
     createAnimations();
     loadNode(scene->GetRootNode());
     createLinks();
+    calcMaxBonesPerVertex();
 
     pManager->Destroy();
 }
@@ -240,8 +243,11 @@ void MyParser::loadNodeKeyframe(FbxNode *node)
             FbxAnimCurve *rotationCurve = node->LclRotation.GetCurve(animLayer);
             FbxAnimCurve *scalingCurve = node->LclScaling.GetCurve(animLayer);
 
-            std::string name = node->GetName();
-            model.getAnimations()[i]->addNodeAnimation(model.findBone(name));
+            MyModelFormat::MyNode* bone = model.findBone(node->GetName());
+            if(!bone)
+                continue;
+
+            model.getAnimations()[i]->addNodeAnimation(bone);
             MyModelFormat::MyNodeAnimation* nodeAnim = model.getAnimations()[i]->getLastNodeAnim();
 
             struct OneChannelTrans
@@ -329,8 +335,6 @@ void MyParser::loadNodeKeyframe(FbxNode *node)
             }
             else
             {
-                std::cout << std::endl;
-
                 FbxDouble3 rotationVector = node->LclRotation.Get();
                 glm::vec3 vrotate (rotationVector[0],
                                   rotationVector[1],
@@ -388,11 +392,11 @@ void MyParser::loadSkelett(FbxMesh *mesh)
             if(parent)
                  parentName = parent->GetName();
 
-            model.getBones().emplace_back(bone->GetName(), model.findBone(parentName));
+            MyModelFormat::MyNode* node =
+                    new MyModelFormat::MyNode(bone->GetName(), model.findBone(parentName));
+            model.getBones().emplace_back(node);
 
             loadNodeKeyframe(bone);
-
-            MyModelFormat::MyNode* node = model.findBone(bone->GetName());
 
             // Get the bind pose
             FbxAMatrix bindPoseMatrix;
@@ -405,7 +409,10 @@ void MyParser::loadSkelett(FbxMesh *mesh)
             for(int k = 0; k < cluster->GetControlPointIndicesCount(); k++)
             {
                 int boneVertexIndex = boneVertexIndices[k];
-                float boneWeight = (float)boneVertexWeights[boneVertexIndex];
+                float boneWeight = static_cast<float>(boneVertexWeights[boneVertexIndex]);
+
+                if(boneWeight == 0.0f)
+                    continue;
 
                 node->addBoneDep(boneVertexIndex, boneWeight);
             }
@@ -429,9 +436,9 @@ void MyParser::createAnimations()
 
 void MyParser::createLinks()
 {
-    for(MyModelFormat::MyNode& bone : model.getBones())
+    for(MyModelFormat::MyNode* bone : model.getBones())
     {
-        FbxNode* fbxNode = scene->FindNodeByName(bone.getName().c_str());
+        FbxNode* fbxNode = scene->FindNodeByName(bone->getName().c_str());
 
         int childCount = fbxNode->GetChildCount();
         for(int i = 0; i < childCount; i++)
@@ -440,7 +447,74 @@ void MyParser::createLinks()
             MyModelFormat::MyNode* myChild = model.findBone(child->GetName());
 
             if(myChild)
-                bone.addChild(myChild);
+                bone->addChild(myChild);
+        }
+    }
+}
+
+void MyParser::calcMaxBonesPerVertex()
+{
+    for(uint32_t i = 0; i < model.getPositions().size(); i++)
+    {
+        struct BoneAndWeight
+        {
+            BoneAndWeight(){}
+
+            BoneAndWeight(MyModelFormat::MyNode* bone,
+                          uint32_t index,
+                          float weight)
+                : bone(bone)
+                , index(index)
+                , weight(weight){}
+
+            MyModelFormat::MyNode* bone;
+            uint32_t index;
+            float weight;
+        };
+
+        std::vector<BoneAndWeight> boneAndWeights;
+
+        // find all bones that influence current vertex
+        for(MyModelFormat::MyNode* bone : model.getBones())
+        {
+            for(uint32_t k = 0; k < bone->getBoneDeps().size(); k++)
+            {
+                if((uint32_t)bone->getBoneDeps()[k].vertexIndex == i)
+                    boneAndWeights.emplace_back(bone, k, bone->getBoneDeps()[k].boneWeight);
+            }
+        }
+
+        // if there are too many bones, reduce them
+        if(boneAndWeights.size() > MAX_BONES_PER_VERTEX)
+        {
+            std::sort(boneAndWeights.begin(), boneAndWeights.end(), [](const BoneAndWeight& b1,
+                                                     const BoneAndWeight& b2)
+            {
+                return b1.weight > b2.weight;
+            });
+
+            for(uint32_t k = 0; k < boneAndWeights.size(); k++)
+            {
+                MyModelFormat::MyNode* bone = boneAndWeights[k].bone;
+
+                bone->getBoneDeps().erase(bone->getBoneDeps().begin()+k);
+            }
+
+            boneAndWeights.resize(MAX_BONES_PER_VERTEX);
+
+            float depSum;
+
+            for(BoneAndWeight& boneWeight : boneAndWeights)
+            {
+                depSum += boneWeight.weight;
+            }
+
+            float faktor = 1.0f / depSum;
+
+            for(BoneAndWeight& boneWeight : boneAndWeights)
+            {
+                boneWeight.bone->getBoneDeps()[boneWeight.index].boneWeight = boneWeight.weight*faktor;
+            }
         }
     }
 }

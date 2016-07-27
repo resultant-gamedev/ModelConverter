@@ -11,6 +11,11 @@ MyModelFormat::MyModel::~MyModel()
     {
         delete animation;
     }
+
+    for(MyModelFormat::MyNode* bone : vBone)
+    {
+        delete bone;
+    }
 }
 
 std::vector<glm::vec4> &MyModelFormat::MyModel::getPositions()
@@ -33,7 +38,7 @@ std::vector<uint32_t> &MyModelFormat::MyModel::getIndices()
     return vIndex;
 }
 
-std::vector<MyModelFormat::MyNode> &MyModelFormat::MyModel::getBones()
+std::vector<MyModelFormat::MyNode *> &MyModelFormat::MyModel::getBones()
 {
     return vBone;
 }
@@ -45,10 +50,10 @@ std::vector<MyModelFormat::MyAnimation *> &MyModelFormat::MyModel::getAnimations
 
 MyModelFormat::MyNode *MyModelFormat::MyModel::findBone(std::string name)
 {
-    for(MyModelFormat::MyNode& bone : vBone)
+    for(MyModelFormat::MyNode* bone : vBone)
     {
-        if(bone.getName() == name)
-            return &bone;
+        if(bone->getName() == name)
+            return bone;
     }
 
     return NULL;

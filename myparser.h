@@ -5,7 +5,6 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "extern/glm/glm.hpp"
 #include "extern/glm/ext.hpp"
@@ -16,10 +15,7 @@
 #include "MyModelFormat/myexporter.h"
 #include "MyModelFormat/myimporter.h"
 
-inline void coutVec3(const glm::vec3& v)
-{
-    std::cout << "(" << v.x << ", " << v.y << ", " << v.z << ")" << std::endl;
-}
+#define MAX_BONES_PER_VERTEX 4
 
 class MyParser
 {
@@ -37,6 +33,7 @@ private:
     void loadSkelett(FbxMesh* mesh);
     void createAnimations();
     void createLinks();
+    void calcMaxBonesPerVertex();
 
     bool checkFileType(const std::string& filename);
 

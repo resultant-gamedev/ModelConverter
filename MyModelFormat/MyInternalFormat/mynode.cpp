@@ -30,6 +30,11 @@ void MyModelFormat::MyNode::addBoneDep(int vertexIndex, float boneWeight)
     boneData.emplace_back(vertexIndex, boneWeight);
 }
 
+std::vector<MyModelFormat::Bone> &MyModelFormat::MyNode::getBoneDeps()
+{
+    return boneData;
+}
+
 MyModelFormat::MyNode *MyModelFormat::MyNode::getParent()
 {
     return mParent;
@@ -64,16 +69,4 @@ glm::mat4 MyModelFormat::MyNode::getInvBindPose()
 void MyModelFormat::MyNode::addNodeAnimation(MyModelFormat::MyNodeAnimation *nodeAnim)
 {
     nodeAnimations.emplace_back(nodeAnim);
-}
-
-MyModelFormat::Bone &MyModelFormat::MyNode::getBoneDep(unsigned int index)
-{
-    assert(index < boneData.size());
-
-    return boneData[index];
-}
-
-unsigned int MyModelFormat::MyNode::getBoneDepCount()
-{
-    return boneData.size();
 }

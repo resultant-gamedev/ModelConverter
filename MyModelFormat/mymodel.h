@@ -18,7 +18,7 @@ public:
     std::vector<glm::vec3>& getNormals();
     std::vector<glm::vec2>& getUVs();
     std::vector<uint32_t>& getIndices();
-    std::vector<MyModelFormat::MyNode>& getBones();
+    std::vector<MyModelFormat::MyNode*>& getBones();
     std::vector<MyModelFormat::MyAnimation*>& getAnimations();
 
     MyNode* findBone(std::string name);
@@ -29,7 +29,7 @@ private:
     std::vector<glm::vec3> vNormal;
     std::vector<glm::vec2> vUV;
 
-    std::vector<MyModelFormat::MyNode> vBone;
+    std::vector<MyModelFormat::MyNode*> vBone;
     std::vector<MyModelFormat::MyAnimation*> vAnimation;
 };
 

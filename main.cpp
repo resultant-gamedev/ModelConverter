@@ -8,8 +8,8 @@ int main(int argc, char *argv[])
 
     if(argc != 3)
     {
-        imp.importFromFile("data/test.mym");
-        imp.exportToFile("data/newone");
+        imp.importFromFile("data/WholeBody.fbx");
+        imp.exportToFile("data/body");
     }
     else
     {

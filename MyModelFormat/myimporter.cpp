@@ -98,8 +98,7 @@ void MyModelFormat::MyImporter::importBones(MyModelFormat::MyStack* stack)
 {
     for(MyModelFormat::MyStack* boneStack : stack->getChildren())
     {
-        model.getBones().emplace_back(boneStack->getName());
-        MyModelFormat::MyNode& currentBone = model.getBones().back();
+        MyModelFormat::MyNode* currentBone = new MyNode(boneStack->getName());
 
         for(MyModelFormat::MyStack* boneInfoStack : boneStack->getChildren())
         {
@@ -117,7 +116,7 @@ void MyModelFormat::MyImporter::importBones(MyModelFormat::MyStack* stack)
                     i++;
                 } while( (sstream >> dummy) && (i < 16));
 
-                currentBone.setBindPose(glm::make_mat4(bindPose));
+                currentBone->setBindPose(glm::make_mat4(bindPose));
             }
             else if(BONEWEIGHT == boneInfoStack->getName())
             {
@@ -131,11 +130,13 @@ void MyModelFormat::MyImporter::importBones(MyModelFormat::MyStack* stack)
                 {
                     sstream >> i >> dummy >> w;
 
-                    currentBone.addBoneDep(i, w);
+                    currentBone->addBoneDep(i, w);
 
                 } while(sstream >> dummy);
             }
         }
+
+        model.getBones().emplace_back(currentBone);
     }
 }
 

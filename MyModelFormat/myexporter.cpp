@@ -91,16 +91,16 @@ void MyModelFormat::MyExporter::exportBones()
     file << BONES << " {" << std::endl;
     prefix += '\t';
 
-        for(MyModelFormat::MyNode& bone : model.getBones())
+        for(MyModelFormat::MyNode* bone : model.getBones())
         {
-            file << prefix << bone.getName() << " {" << std::endl;
+            file << prefix << bone->getName() << " {" << std::endl;
             prefix += '\t';
 
                 // print bindPose matrix
                 file << prefix << BINDPOSEMATRIX << " {" << std::endl;
                 prefix += '\t';
 
-                    float* m = &bone.getBindPose()[0][0];
+                    float* m = &bone->getBindPose()[0][0];
                     file << prefix;
                     for(uint32_t i = 0; i < 16; i++)
                     {
@@ -110,21 +110,24 @@ void MyModelFormat::MyExporter::exportBones()
                 prefix.resize(prefix.size()-1);
                 file << prefix << "}" << std::endl;
 
-                // print bone weight with index
-                file << prefix << BONEWEIGHT << " {" << std::endl;
-                prefix += '\t';
+                if(bone->getBoneDeps().size())
+                {
+                    // print bone weight with index
+                    file << prefix << BONEWEIGHT << " {" << std::endl;
+                    prefix += '\t';
 
-                    for(uint32_t i = 0; i < bone.getBoneDepCount(); i++)
-                    {
-                        file << prefix
-                             << bone.getBoneDep(i).vertexIndex << ","
-                             << bone.getBoneDep(i).boneWeight
-                             << ((i != bone.getBoneDepCount()-1) ? "," : "")
-                             << std::endl;
-                    }
+                        for(uint32_t i = 0; i < bone->getBoneDeps().size(); i++)
+                        {
+                            file << prefix
+                                 << bone->getBoneDeps()[i].vertexIndex << ","
+                                 << bone->getBoneDeps()[i].boneWeight
+                                 << ((i != bone->getBoneDeps().size()-1) ? "," : "")
+                                 << std::endl;
+                        }
 
-                prefix.resize(prefix.size()-1);
-                file << prefix << "}" << std::endl;
+                    prefix.resize(prefix.size()-1);
+                    file << prefix << "}" << std::endl;
+                }
 
             prefix.resize(prefix.size()-1);
             file << prefix << "}" << std::endl;
@@ -153,11 +156,11 @@ void MyModelFormat::MyExporter::exportConnections()
 
         std::vector<NodeRelation> relations;
 
-        for(MyModelFormat::MyNode& node : model.getBones())
+        for(MyModelFormat::MyNode* node : model.getBones())
         {
-            for(MyModelFormat::MyNode* child : node.getChildren())
+            for(MyModelFormat::MyNode* child : node->getChildren())
             {
-                relations.emplace_back(node.getName(), child->getName());
+                relations.emplace_back(node->getName(), child->getName());
             }
         }
 

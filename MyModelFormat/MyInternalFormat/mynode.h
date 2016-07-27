@@ -22,6 +22,7 @@ struct Bone
 
 class MyNodeAnimation;
 class MyAnimation;
+class MyParser;
 
 /**
  * @brief The MyNode class
@@ -31,6 +32,7 @@ class MyAnimation;
 class MyNode
 {
     friend class MyAnimation;
+    friend class MyParser;
 
 public:
     MyNode(std::string name,
@@ -41,8 +43,7 @@ public:
     void addChild(MyNode* child);
     void addBoneDep(int vertexIndex, float boneWeight);
 
-    Bone& getBoneDep(unsigned int index);
-    unsigned int getBoneDepCount();
+    std::vector<Bone>& getBoneDeps();
 
     MyNode *getParent();
     std::vector<MyNode*>& getChildren();
