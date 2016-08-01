@@ -54,8 +54,6 @@ void MyModelFormat::MyImporter::importMesh(MyModelFormat::MyStack *stack)
     {
         if(MESHDATA == child->getName())
         {
-            glm::vec3 n;
-            glm::vec2 u;
             uint32_t i;
             char d;
 
@@ -63,33 +61,32 @@ void MyModelFormat::MyImporter::importMesh(MyModelFormat::MyStack *stack)
 
             do
             {
-                sstream >> n.x >> d >> n.y >> d >> n.z >> d
-                        >> u.x >> d >> u.y >> d
-                        >> i;
+                sstream >> i;
 
-                model.getNormals().emplace_back(n);
-                model.getUVs().emplace_back(u);
                 model.getIndices().emplace_back(i);
 
             } while(sstream >> d);
         }
         else if(POSITION == child->getName())
         {
+            glm::vec3 n;
+            glm::vec2 u;
             glm::vec4 pos;
-            char dummy;
+            char d;
 
             std::istringstream sstream(child->getContent());
 
             do
             {
-                sstream >> pos.x >> dummy
-                        >> pos.y >> dummy
-                        >> pos.z >> dummy
-                        >> pos.w;
+                sstream >> pos.x >> d >> pos.y >> d >> pos.z >> d >> pos.w
+                        >> n.x >> d >> n.y >> d >> n.z >> d
+                        >> u.x >> d >> u.y;
 
                 model.getPositions().emplace_back(pos);
+                model.getNormals().emplace_back(n);
+                model.getUVs().emplace_back(u);
 
-            } while(sstream >> dummy);
+            } while(sstream >> d);
         }
     }
 }

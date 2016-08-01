@@ -49,12 +49,14 @@ void MyModelFormat::MyExporter::exportMesh()
             for(uint32_t i = 0; i < model.getPositions().size(); i++)
             {
                 glm::vec4& pos = model.getPositions()[i];
+                glm::vec3& n = model.getNormals()[i];
+                glm::vec2& u = model.getUVs()[i];
 
                 file << prefix
-                     << pos.x << ","
-                     << pos.y << ","
-                     << pos.z << ","
-                     << pos.w << ((i != model.getPositions().size()-1) ? "," : "")
+                     << pos.x << "," << pos.y << "," << pos.z << "," << pos.w
+                     << n.x << "," << n.y << "," << n.z << ","
+                     << u.x << "," << u.y
+                     << ((i != model.getPositions().size()-1) ? "," : "")
                      << std::endl;
             }
 
@@ -67,13 +69,9 @@ void MyModelFormat::MyExporter::exportMesh()
             uint32_t size = model.getIndices().size();
             for(uint32_t k = 0; k < size; k++)
             {
-                glm::vec3& n = model.getNormals()[k];
-                glm::vec2& u = model.getUVs()[k];
                 uint32_t& i = model.getIndices()[k];
 
                 file << prefix
-                     << n.x << "," << n.y << "," << n.z << ","
-                     << u.x << "," << u.y << ","
                      << i << ((k != size-1) ? "," : "")
                      << std::endl;
             }

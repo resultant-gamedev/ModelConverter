@@ -1,6 +1,7 @@
 #include "myparser.h"
 #include <iostream>
 #include <algorithm>
+#include <deque>
 
 MyParser::MyParser()
 {
@@ -101,6 +102,8 @@ void MyParser::loadMesh(FbxMesh *pMesh)
 
 
     // ======================== get normals =========================
+    std::vector<glm::vec3> normals;
+
     FbxGeometryElementNormal* pNormalElem = pMesh->GetElementNormal();
     if(!pNormalElem)
     {
@@ -123,7 +126,7 @@ void MyParser::loadMesh(FbxMesh *pMesh)
             FbxVector4 tmp = pNormalElem->GetDirectArray().GetAt(index);
             glm::vec3 normal(tmp[0], tmp[1], tmp[2]);
 
-            model.getNormals().emplace_back(normal);
+            normals.emplace_back(normal);
         }
     }
     else if(pNormalElem->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
@@ -147,7 +150,7 @@ void MyParser::loadMesh(FbxMesh *pMesh)
                 FbxVector4 tmp = pNormalElem->GetDirectArray().GetAt(index);
                 glm::vec3 normal(tmp[0], tmp[1], tmp[2]);
 
-                model.getNormals().emplace_back(normal);
+                normals.emplace_back(normal);
 
                 polygonVertexIndex++;
             }
@@ -155,6 +158,8 @@ void MyParser::loadMesh(FbxMesh *pMesh)
     }
 
     // ======================== get UVs =========================
+    std::vector<glm::vec2> uvs;
+
     FbxStringList uvNameList;
     pMesh->GetUVSetNames(uvNameList);
 
@@ -191,7 +196,7 @@ void MyParser::loadMesh(FbxMesh *pMesh)
                     FbxVector2 tmp = uvElement->GetDirectArray().GetAt(uvIndex);
                     glm::vec2 uv(tmp[0], tmp[1]);
 
-                    model.getUVs().emplace_back(uv);
+                    uvs.emplace_back(uv);
                 }
             }
         }
@@ -213,7 +218,7 @@ void MyParser::loadMesh(FbxMesh *pMesh)
                         FbxVector2 tmp = uvElement->GetDirectArray().GetAt(uvIndex);
                         glm::vec2 uv(tmp[0], tmp[1]);
 
-                        model.getUVs().emplace_back(uv);
+                        uvs.emplace_back(uv);
 
                         polygonVertexIndex++;
                     }
@@ -222,9 +227,66 @@ void MyParser::loadMesh(FbxMesh *pMesh)
         }
     }
 
+    // find the first different indices
+    struct IndexPos
+    {
+        uint32_t index;
+        uint32_t position;
+    };
+
+    std::vector<IndexPos> diffIndices;
+
+    for(uint32_t i = 0; i < model.getIndices().size(); i++)
+    {
+        if(diffIndices.size() == model.getPositions().size())
+            break;
+
+        uint32_t index = model.getIndices()[i];
+
+        // check if index is already captured
+        if(std::find_if(diffIndices.begin(), diffIndices.end(), [index](const IndexPos& ip)
+            {
+                return ip.index == index;
+            }) == diffIndices.end())
+        {
+            IndexPos ip = {index, i};
+            diffIndices.emplace_back(ip);
+        }
+    }
+
+    std::deque<uint32_t> missingIndices;
+
+    for(uint32_t i = 0; i < diffIndices.size(); i++)
+    {
+        if(std::find_if(diffIndices.begin(), diffIndices.end(), [i](const IndexPos& ip)
+                {
+                    return ip.index == i;
+                }) == diffIndices.end())
+            missingIndices.emplace_back(i);
+    }
+
+    std::sort(missingIndices.begin(), missingIndices.end());
+
+    for(uint32_t i = 0; i < diffIndices.size(); i++)
+    {
+        if(missingIndices.size())
+        {
+            if(i == missingIndices[0])
+            {
+                model.getNormals().emplace_back(vec3(0.0f));
+                model.getUVs().emplace_back(vec2(0.0f));
+
+                missingIndices.pop_front();
+            }
+        }
+
+        model.getNormals().emplace_back(normals[diffIndices[i].position]);
+        model.getUVs().emplace_back(uvs[diffIndices[i].position]);
+    }
+
     // check correctness
-    assert(model.getIndices().size() == model.getNormals().size());
-    assert(model.getIndices().size() == model.getUVs().size());
+    assert(model.getPositions().size() == model.getNormals().size());
+    assert(model.getPositions().size() == model.getUVs().size());
 }
 
 void MyParser::loadNodeKeyframe(FbxNode *node)
