@@ -56,7 +56,7 @@ void MyModelFormat::MyExporter::exportMesh()
                 glm::vec2& u = model.getUVs()[i];
 
                 file << prefix
-                     << pos.x << "," << pos.y << "," << pos.z << "," << pos.w
+                     << pos.x << "," << pos.y << "," << pos.z << "," << pos.w << ","
                      << n.x << "," << n.y << "," << n.z << ","
                      << u.x << "," << u.y
                      << ((i != model.getPositions().size()-1) ? "," : "")
