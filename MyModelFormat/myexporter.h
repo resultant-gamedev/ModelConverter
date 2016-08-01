@@ -25,6 +25,8 @@ private:
     void exportAnimations();
     void exportNodeAnims();
 
+    void deleteSpaceInNames();
+
     std::ofstream file;
     MyModelFormat::MyModel& model;
 };

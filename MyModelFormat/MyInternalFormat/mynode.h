@@ -23,6 +23,7 @@ struct Bone
 class MyNodeAnimation;
 class MyAnimation;
 class MyParser;
+class MyExporter;
 
 /**
  * @brief The MyNode class
@@ -33,6 +34,7 @@ class MyNode
 {
     friend class MyAnimation;
     friend class MyParser;
+    friend class MyExporter;
 
 public:
     MyNode(std::string name,

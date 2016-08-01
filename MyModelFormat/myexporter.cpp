@@ -1,5 +1,6 @@
 #include "myexporter.h"
 #include <iostream>
+#include <algorithm>
 
 MyModelFormat::MyExporter::MyExporter(std::string filename,
                                       MyModelFormat::MyModel &model)
@@ -28,6 +29,8 @@ MyModelFormat::MyExporter::~MyExporter()
 
 void MyModelFormat::MyExporter::exportModel()
 {
+    deleteSpaceInNames();
+
     exportMesh();
     exportBones();
     exportConnections();
@@ -227,5 +230,24 @@ void MyModelFormat::MyExporter::exportAnimations()
             file << prefix << "}" << std::endl;
         }
 
-    file << "}" << std::endl;
+        file << "}" << std::endl;
+}
+
+void MyModelFormat::MyExporter::deleteSpaceInNames()
+{
+    for(MyAnimation* animation : model.getAnimations())
+    {
+        animation->name.erase(std::remove(animation->name.begin(),
+                                          animation->name.end(),
+                                          ' '),
+                              animation->name.end());
+    }
+
+    for(MyNode* node : model.getBones())
+    {
+        node->name.erase(std::remove(node->name.begin(),
+                                     node->name.end(),
+                                     ' '),
+                         node->name.end());
+    }
 }
