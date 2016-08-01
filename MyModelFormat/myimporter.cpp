@@ -78,7 +78,7 @@ void MyModelFormat::MyImporter::importMesh(MyModelFormat::MyStack *stack)
 
             do
             {
-                sstream >> pos.x >> d >> pos.y >> d >> pos.z >> d >> pos.w
+                sstream >> pos.x >> d >> pos.y >> d >> pos.z >> d >> pos.w >> d
                         >> n.x >> d >> n.y >> d >> n.z >> d
                         >> u.x >> d >> u.y;
 
