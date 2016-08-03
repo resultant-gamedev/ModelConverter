@@ -44,6 +44,7 @@ void MyParser::importFromFile(const string &filename)
     loadNode(scene->GetRootNode());
     createLinks();
     calcMaxBonesPerVertex();
+    normalizeBoneWeight();
 
     pManager->Destroy();
 }
@@ -579,6 +580,76 @@ void MyParser::calcMaxBonesPerVertex()
             }
         }
     }
+}
+
+void MyParser::normalizeBoneWeight()
+{
+    struct BoneVertex
+    {
+        float boneWeight[MAX_BONES_PER_VERTEX];
+        uint32_t boneID[MAX_BONES_PER_VERTEX];
+        uint32_t vertexID;
+    };
+
+    std::vector<BoneVertex> bones(model.getPositions().size());
+
+    for(uint32_t i = 0; i < model.getPositions().size(); i++)
+    {
+        for(uint32_t k = 0; k < model.getBones().size(); k++)
+        {
+            for(MyModelFormat::Bone& bone : model.getBones()[k]->getBoneDeps())
+            {
+                if(bone.vertexIndex == i)
+                {
+                    bones[i].vertexID = bone.vertexIndex;
+
+                    for(uint32_t o = 0; o < 4; o++)
+                    {
+                        if(bones[i].boneWeight[o] == 0.0f)
+                        {
+                            bones[i].boneWeight[o]  = bone.boneWeight;
+                            bones[i].boneID[o]      = k;
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    for(uint32_t i = 0; i < model.getPositions().size(); i++)
+    {
+        float sum = 0.0f;
+
+        for(uint32_t k = 0; k < MAX_BONES_PER_VERTEX; k++)
+        {
+            std::cout << k << " = " << bones[i].boneWeight[k] << std::endl;
+            sum += bones[i].boneWeight[k];
+        }
+
+        if(sum == 0.0f)
+            continue;
+
+        float faktor = 1.0f / sum;
+
+        for(uint32_t k = 0; k < MAX_BONES_PER_VERTEX; k++)
+        {
+            for(MyModelFormat::Bone& boneDep : model.getBones()[bones[i].boneID[k]]->getBoneDeps())
+            {
+                if(boneDep.vertexIndex == bones[i].vertexID)
+                {
+                    boneDep.boneWeight = bones[i].boneWeight[k] * faktor;
+                    std::cout << k << " = " << boneDep.boneWeight << std::endl;
+                }
+            }
+        }
+
+        std::cout << std::endl;
+    }
+
+    bones.clear();
 }
 
 bool MyParser::checkFileType(const string &filename)

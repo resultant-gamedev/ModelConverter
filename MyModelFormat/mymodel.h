@@ -5,6 +5,8 @@
 #include "MyInternalFormat/mynodeanimation.h"
 #include "MyInternalFormat/myanimation.h"
 
+#define MAX_BONES 16
+
 namespace MyModelFormat
 {
 

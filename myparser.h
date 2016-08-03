@@ -34,6 +34,7 @@ private:
     void createAnimations();
     void createLinks();
     void calcMaxBonesPerVertex();
+    void normalizeBoneWeight();
 
     bool checkFileType(const std::string& filename);
 
